@@ -1,27 +1,264 @@
 {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "properties": { "trip_id": 1, "frequency": 3 },
-        "geometry": {
-          "type": "LineString",
-          "coordinates": [
-            [-74.006, 40.7128],  
-            [2.3522, 48.8566]    
-          ]
-        }
-      },
-      {
-        "type": "Feature",
-        "properties": { "trip_id": 2, "frequency": 1 },
-        "geometry": {
-          "type": "LineString",
-          "coordinates": [
-            [2.3522, 48.8566],   
-            [139.6917, 35.6895] 
-          ]
-        }
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 1, "frequency": 3 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],  
+          [-111.8910, 40.7608]    
+        ]
       }
-    ]
-  }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 2, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-73.7562, 42.6526] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 3, "frequency": 12 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-113.6316, 42.0780] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 4, "frequency": 10 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-109.5508, 38.5733] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 5, "frequency": 4 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-111.6000, 37.7700] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 6, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],   
+          [-120.6615, 47.5962] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 7, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-120.6615, 47.5962],   
+          [-123.0438, 47.0379] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 8, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-123.0438, 47.0379],   
+          [-122.6765, 45.5231] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 9, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-122.6765, 45.5231],   
+          [-116.2023, 43.6150] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 10, "frequency": 25 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],   
+          [-111.8910, 40.7608] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 11, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-105.2705, 40.0150] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 12, "frequency": 2 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-116.3131, 34.1347] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 13, "frequency": 3 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-115.1728, 36.1147] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 14, "frequency": 2 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-119.9772, 39.0968] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 15, "frequency": 3 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-109.4672, 42.7436] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 16, "frequency": 20 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],   
+          [-114.9378, 44.2117] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 17, "frequency": 12 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],   
+          [-116.0980, 44.9115] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 18, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-68.8967, 12.1696] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 19, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],   
+          [-124.2026, 41.7558],   
+          [-122.4194, 37.7749],   
+          [-119.5383, 37.8651],   
+          [-116.2023, 43.6150] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 20, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],   
+          [-112.0740, 33.4484],   
+          [-111.7609, 34.8697],   
+          [-116.2023, 43.6150] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 21, "frequency": 20 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-116.2023, 43.6150],   
+          [-112.4455, 42.8713] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 22, "frequency": 20 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-112.4455, 42.8713] 
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "trip_id": 23, "frequency": 1 },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [-111.8910, 40.7608],   
+          [-113.5781, 37.1041],   
+          [-113.0263, 37.2982] 
+        ]
+      }
+    }
+  ]
+}

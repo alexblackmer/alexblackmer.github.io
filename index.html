@@ -5,60 +5,199 @@
     <title>Travel Visualization Map</title>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://d3js.org/topojson.v1.min.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet" />
     <style>
         body { margin: 0; font-family: Arial, sans-serif; }
-        svg { width: 100vw; height: 100vh; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
     </style>
 </head>
 <body>
-<svg></svg>
+<div id="map"></div>
 <script>
-const width = window.innerWidth;
-const height = window.innerHeight;
+const mapboxToken = 'pk.eyJ1IjoiYWJsYWNrbWVyIiwiYSI6ImNtN2dmdHpuNzBiZ2gybG9oYmV0Y292ZGUifQ.JwmJXB0Ki8jV3dNrsWoEzg'; // Replace with your Mapbox access token
 
-// Create SVG container
-const svg = d3.select("svg")
-    .attr("width", width)
-    .attr("height", height);
+// Initialize Mapbox GL JS map
+mapboxgl.accessToken = mapboxToken;
+const map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/streets-v11',
+    center: [-80, 33], // Center the map on the USA and Curacao
+    zoom: 3
+});
 
-// Set up map projection
-const projection = d3.geoNaturalEarth1()
-    .scale(200)
-    .translate([width / 2, height / 2]);
+// Function to interpolate points between two coordinates
+function interpolatePoints(start, end, numPoints) {
+    const points = [];
+    const deltaX = (end[0] - start[0]) / numPoints;
+    const deltaY = (end[1] - start[1]) / numPoints;
+    for (let i = 0; i <= numPoints; i++) {
+        points.push([start[0] + i * deltaX, start[1] + i * deltaY]);
+    }
+    return points;
+}
 
-const path = d3.geoPath().projection(projection);
+// Load trip data and add line layer
+map.on('load', () => {
+    d3.json('travel_data.geojson').then(trips => {
+        const routes = [];
 
-// Load world map and trip data
-Promise.all([
-    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"),
-    d3.json("travel_data.geojson") // Your travel GeoJSON
-]).then(([world, trips]) => {
-    const countries = topojson.feature(world, world.objects.countries);
+        // Function to get route from Mapbox Directions API
+        function getRoute(coordinates, frequency) {
+            const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${coordinates.join(';')}?geometries=geojson&access_token=${mapboxToken}`;
+            return fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.routes && data.routes.length > 0) {
+                        const route = data.routes[0].geometry.coordinates;
+                        const interpolatedRoute = [];
+                        for (let i = 0; i < route.length - 1; i++) {
+                            interpolatedRoute.push(...interpolatePoints(route[i], route[i + 1], 10)); // Interpolate 10 points between each pair of coordinates
+                            if (i < route.length - 2) {
+                                interpolatedRoute.push(...interpolatePoints(route[i + 1], route[i + 2], 10)); // Interpolate additional points between the next pair of coordinates
+                            }
+                        }
+                        routes.push({
+                            type: 'Feature',
+                            properties: { frequency: frequency },
+                            geometry: {
+                                type: 'LineString',
+                                coordinates: interpolatedRoute
+                            }
+                        });
+                    } else {
+                        console.error('No routes found for coordinates:', coordinates);
+                    }
+                })
+                .catch(error => console.error('Error fetching route:', error));
+        }
 
-    // Draw the world map
-    svg.append("g")
-        .selectAll("path")
-        .data(countries.features)
-        .enter().append("path")
-        .attr("d", path)
-        .attr("fill", "#e0e0e0")
-        .attr("stroke", "#888");
+        // Fetch all routes
+        const promises = trips.features.map(trip => {
+            const coordinates = trip.geometry.coordinates;
+            const frequency = trip.properties.frequency;
+            return getRoute(coordinates, frequency);
+        });
 
-    // Color scale for trip frequency
-    const colorScale = d3.scaleSequential(d3.interpolateReds)
-        .domain([1, d3.max(trips.features, d => d.properties.frequency)]);
+        Promise.all(promises).then(() => {
+            const routeGeoJSON = {
+                type: 'FeatureCollection',
+                features: routes
+            };
 
-    // Draw travel paths
-    svg.append("g")
-        .selectAll("path")
-        .data(trips.features)
-        .enter().append("path")
-        .attr("d", d => path(d.geometry))
-        .attr("fill", "none")
-        .attr("stroke", d => colorScale(d.properties.frequency))
-        .attr("stroke-width", d => 1 + d.properties.frequency)
-        .attr("opacity", 0.7);
-}).catch(error => console.error(error));
+            map.addSource('routes', {
+                type: 'geojson',
+                data: routeGeoJSON
+            });
+
+            map.addLayer({
+                id: 'routes-heat',
+                type: 'heatmap',
+                source: 'routes',
+                maxzoom: 9,
+                paint: {
+                    // Increase the heatmap weight based on frequency
+                    'heatmap-weight': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'frequency'],
+                        0, 0,
+                        6, 1.5 // Reduced weight
+                    ],
+                    // Increase the heatmap color weight by zoom level
+                    // heatmap-intensity is a multiplier on top of heatmap-weight
+                    'heatmap-intensity': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        0, 0.5, // Reduced intensity
+                        9, 2.5 // Reduced intensity
+                    ],
+                    // Color ramp for heatmap.  Domain is 0 (low) to 1 (high).
+                    // Begin color ramp at 0-stop with a 0-transparancy color
+                    // to create a blur-like effect.
+                    'heatmap-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['heatmap-density'],
+                        0, 'rgba(33,102,172,0)',
+                        0.2, 'rgb(103,169,207)',
+                        0.4, 'rgb(209,229,240)',
+                        0.6, 'rgb(253,219,199)',
+                        0.8, 'rgb(239,138,98)',
+                        1, 'rgb(178,24,43)'
+                    ],
+                    // Adjust the heatmap radius by zoom level
+                    'heatmap-radius': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        0, 2.5, // Reduced radius
+                        9, 7.5 // Reduced radius
+                    ],
+                    // Transition from heatmap to circle layer by zoom level
+                    'heatmap-opacity': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        7, 1,
+                        9, 0
+                    ],
+                }
+            });
+
+            map.addLayer({
+                id: 'routes-point',
+                type: 'circle',
+                source: 'routes',
+                minzoom: 7,
+                paint: {
+                    // Size circle radius by frequency and zoom level
+                    'circle-radius': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        7, [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'frequency'],
+                            1, 1,
+                            6, 4
+                        ],
+                        16, [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'frequency'],
+                            1, 5,
+                            6, 50
+                        ]
+                    ],
+                    // Color circle by frequency
+                    'circle-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', 'frequency'],
+                        1, 'rgba(33,102,172,0)',
+                        2, 'rgb(103,169,207)',
+                        3, 'rgb(209,229,240)',
+                        4, 'rgb(253,219,199)',
+                        5, 'rgb(239,138,98)',
+                        6, 'rgb(178,24,43)'
+                    ],
+                    'circle-stroke-color': 'white',
+                    'circle-stroke-width': 1,
+                    'circle-opacity': [
+                        'interpolate',
+                        ['linear'],
+                        ['zoom'],
+                        7, 0,
+                        8, 1
+                    ]
+                }
+            });
+        });
+    });
+});
 </script>
 </body>
 </html>
