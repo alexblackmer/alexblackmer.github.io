@@ -1,0 +1,27 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": { "trip_id": 1, "frequency": 3 },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [-74.006, 40.7128],  
+            [2.3522, 48.8566]    
+          ]
+        }
+      },
+      {
+        "type": "Feature",
+        "properties": { "trip_id": 2, "frequency": 1 },
+        "geometry": {
+          "type": "LineString",
+          "coordinates": [
+            [2.3522, 48.8566],   
+            [139.6917, 35.6895] 
+          ]
+        }
+      }
+    ]
+  }

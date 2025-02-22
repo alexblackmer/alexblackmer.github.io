@@ -1,1 +1,63 @@
-Hello World
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Travel Visualization Map</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        svg { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body>
+<svg></svg>
+<script>
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+// Create SVG container
+const svg = d3.select("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+// Set up map projection
+const projection = d3.geoNaturalEarth1()
+    .scale(200)
+    .translate([width / 2, height / 2]);
+
+const path = d3.geoPath().projection(projection);
+
+// Load world map and trip data
+Promise.all([
+    d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"),
+    d3.json("travel_data.geojson") // Your travel GeoJSON
+]).then(([world, trips]) => {
+    const countries = topojson.feature(world, world.objects.countries);
+
+    // Draw the world map
+    svg.append("g")
+        .selectAll("path")
+        .data(countries.features)
+        .enter().append("path")
+        .attr("d", path)
+        .attr("fill", "#e0e0e0")
+        .attr("stroke", "#888");
+
+    // Color scale for trip frequency
+    const colorScale = d3.scaleSequential(d3.interpolateReds)
+        .domain([1, d3.max(trips.features, d => d.properties.frequency)]);
+
+    // Draw travel paths
+    svg.append("g")
+        .selectAll("path")
+        .data(trips.features)
+        .enter().append("path")
+        .attr("d", d => path(d.geometry))
+        .attr("fill", "none")
+        .attr("stroke", d => colorScale(d.properties.frequency))
+        .attr("stroke-width", d => 1 + d.properties.frequency)
+        .attr("opacity", 0.7);
+}).catch(error => console.error(error));
+</script>
+</body>
+</html>
